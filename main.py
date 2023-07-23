@@ -2,12 +2,13 @@ import telebot
 import qrcode 
 import base64
 import os
-import config
 import random
 import string
+import uuid
 
-API_KEY = os.environ.get('API_KEY', "")
-bot = telebot.TeleBot(API_KEY)
+# API_KEY = os.environ.get('API_KEY', "")
+# bot = telebot.TeleBot(API_KEY)
+bot = telebot.TeleBot('6058236364:AAHlMLUhcETG6VdZhCg57PIzX7PcTjDe8NQ')
 
 # /start命令处理函数
 @bot.message_handler(commands=['start'])  
@@ -28,6 +29,8 @@ def handle_text(message):
         bot.register_next_step_handler(message, decode_base64)
     elif message.text == '/randompassword':
         bot.send_message(message.chat.id, generate_random_password())
+    elif message.text == '/uuid':
+        bot.send_message(message.chat.id, generate_uuid())
 
 # 生成二维码
 def generate_qrcode(message):
@@ -60,5 +63,9 @@ def generate_random_password():
     characters = string.ascii_letters + string.digits + string.punctuation
     password = ''.join(random.choice(characters) for _ in range(12))
     return password
+
+# 生成UUID
+def generate_uuid():
+    return str(uuid.uuid4())
 
 bot.polling()
