@@ -6,9 +6,9 @@ import random
 import string
 import uuid
 
-# API_KEY = os.environ.get('API_KEY', "")
-# bot = telebot.TeleBot(API_KEY)
-bot = telebot.TeleBot('6058236364:AAHlMLUhcETG6VdZhCg57PIzX7PcTjDe8NQ')
+API_KEY = os.environ.get('API_KEY', "")
+bot = telebot.TeleBot(API_KEY)
+# bot = telebot.TeleBot('6058236364:********X7PcTjDe8NQ')
 
 # /start命令处理函数
 @bot.message_handler(commands=['start'])  
