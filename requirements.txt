@@ -1,4 +1,2 @@
-telebot
-qrcode 
-base64
-config
+pyTelegramBotAPI
+qrcode
