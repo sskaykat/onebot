@@ -33,7 +33,7 @@ def generate_qrcode(message):
 # Base64编码处理函数  
 def encode_base64(message):
     text = message.text
-    text_bytes = text.encode('ascii')
+    text_bytes = text.encode('utf-8')
     base64_bytes = base64.b64encode(text_bytes)
     base64_text = base64_bytes.decode('ascii')
     
