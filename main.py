@@ -46,7 +46,7 @@ def encode_base64(message):
 # Base64解码处理函数
 def decode_base64(message):
     base64_text = message.text
-    base64_bytes = base64_text.encode('ascii')
+    base64_bytes = base64_text.encode('utf-8')
     text_bytes = base64.b64decode(base64_bytes)
     text = text_bytes.decode('utf-8')
     
