@@ -3,6 +3,8 @@ import qrcode
 import base64
 import os
 import config
+import random
+import string
 
 API_KEY = os.environ.get('API_KEY', "")
 bot = telebot.TeleBot(API_KEY)
@@ -24,6 +26,8 @@ def handle_text(message):
     elif message.text == '/base64decoding':
         bot.send_message(message.chat.id, "请回复要解码的Base64文本内容:")
         bot.register_next_step_handler(message, decode_base64)
+    elif message.text == '/randompassword':
+        bot.send_message(message.chat.id, generate_random_password())
 
 # 生成二维码
 def generate_qrcode(message):
@@ -50,5 +54,11 @@ def decode_base64(message):
     text = text_bytes.decode('utf-8')
     
     bot.send_message(message.chat.id, text) 
+
+# 生成随机密码
+def generate_random_password():
+    characters = string.ascii_letters + string.digits + string.punctuation
+    password = ''.join(random.choice(characters) for _ in range(12))
+    return password
 
 bot.polling()
