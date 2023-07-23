@@ -21,7 +21,7 @@ def handle_text(message):
     elif message.text == '/base64':
         bot.send_message(message.chat.id, "请回复要Base64编码的文本内容:")
         bot.register_next_step_handler(message, encode_base64)
-    elif message.text == '/base64解码':
+    elif message.text == '/base64decoding':
         bot.send_message(message.chat.id, "请回复要解码的Base64文本内容:")
         bot.register_next_step_handler(message, decode_base64)
 
