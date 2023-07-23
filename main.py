@@ -2,11 +2,10 @@ import telebot
 import qrcode 
 import base64
 import os
+import config
 
 API_KEY = os.environ.get('API_KEY', "")
 bot = telebot.TeleBot(API_KEY)
-# bot = telebot.TeleBot('6058236364:AAHlMLUhcETG6VdZhCg57PIzX7PcTjDe8NQ')
-
 
 # /start命令处理函数
 @bot.message_handler(commands=['start'])  
@@ -22,7 +21,7 @@ def handle_text(message):
     elif message.text == '/base64':
         bot.send_message(message.chat.id, "请回复要Base64编码的文本内容:")
         bot.register_next_step_handler(message, encode_base64)
-    elif message.text == '/base64jm':
+    elif message.text == '/base64解码':
         bot.send_message(message.chat.id, "请回复要解码的Base64文本内容:")
         bot.register_next_step_handler(message, decode_base64)
 
@@ -46,7 +45,7 @@ def encode_base64(message):
 # Base64解码处理函数
 def decode_base64(message):
     base64_text = message.text
-    base64_bytes = base64_text.encode('utf-8')
+    base64_bytes = base64_text.encode('ascii')
     text_bytes = base64.b64decode(base64_bytes)
     text = text_bytes.decode('utf-8')
     
