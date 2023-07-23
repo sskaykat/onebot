@@ -22,6 +22,10 @@ def handle_text(message):
         bot.send_message(message.chat.id, "请回复要Base64编码的文本内容:")
         bot.register_next_step_handler(message, encode_base64)
 
+    elif message.text == '/base64解码':
+        bot.send_message(message.chat.id, "请回复要解码的Base64文本内容:")
+        bot.register_next_step_handler(message, decode_base64)
+
 # 生成二维码
 def generate_qrcode(message):
     text = message.text
@@ -38,5 +42,14 @@ def encode_base64(message):
     base64_text = base64_bytes.decode('ascii')
     
     bot.send_message(message.chat.id, base64_text) 
+
+# Base64解码处理函数
+def decode_base64(message):
+    base64_text = message.text
+    base64_bytes = base64_text.encode('ascii')
+    text_bytes = base64.b64decode(base64_bytes)
+    text = text_bytes.decode('utf-8')
+    
+    bot.send_message(message.chat.id, text) 
 
 bot.polling()
