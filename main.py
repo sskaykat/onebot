@@ -2,6 +2,7 @@ import telebot
 import qrcode 
 import base64
 import config
+import os
 
 API_KEY = os.environ.get('API_KEY', "")
 bot = telebot.TeleBot(API_KEY)
