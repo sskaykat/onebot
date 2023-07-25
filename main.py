@@ -5,10 +5,11 @@ import os
 import random
 import string
 import uuid
+import requests
 
 API_KEY = os.environ.get('API_KEY', "")
 bot = telebot.TeleBot(API_KEY)
-# bot = telebot.TeleBot('6058236364:********X7PcTjDe8NQ')
+# bot = telebot.TeleBot('6058236**********TjDe8NQ')
 
 # /start命令处理函数
 @bot.message_handler(commands=['start'])  
@@ -31,6 +32,9 @@ def handle_text(message):
         bot.send_message(message.chat.id, generate_random_password())
     elif message.text == '/uuid':
         bot.send_message(message.chat.id, generate_uuid())
+    elif message.text == '/bingwallpaper':
+        download_bing_wallpaper(message.chat.id)
+
 
 # 生成二维码
 def generate_qrcode(message):
@@ -67,5 +71,40 @@ def generate_random_password():
 # 生成UUID
 def generate_uuid():
     return str(uuid.uuid4())
+    
+# 下载必应每日壁纸
+def download_bing_wallpaper(chat_id):
+    # 构建必应每日壁纸的URL
+    url = 'https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=en-US'
+
+    try:
+        # 发送GET请求获取必应每日壁纸信息
+        response = requests.get(url)
+        data = response.json()
+
+        # 提取壁纸的相对路径
+        wallpaper_path = data['images'][0]['url']
+
+        # 构建完整的壁纸URL
+        wallpaper_url = 'https://www.bing.com' + wallpaper_path
+
+        # 发送GET请求下载壁纸
+        wallpaper_response = requests.get(wallpaper_url)
+
+        # 保存壁纸文件
+        with open('bing_wallpaper.jpg', 'wb') as f:
+            f.write(wallpaper_response.content)
+
+        # 发送壁纸给用户
+        photo = open('bing_wallpaper.jpg', 'rb')
+        bot.send_photo(chat_id, photo)
+
+        # 删除下载的壁纸文件
+        os.remove('bing_wallpaper.jpg')
+
+    except Exception as e:
+        bot.send_message(chat_id, '下载壁纸时发生错误。')
+
+
 
 bot.polling()
