@@ -6,6 +6,7 @@ import random
 import string
 import uuid
 import requests
+from PIL import Image
 
 API_KEY = os.environ.get('API_KEY', "")
 bot = telebot.TeleBot(API_KEY)
@@ -34,6 +35,9 @@ def handle_text(message):
         bot.send_message(message.chat.id, generate_uuid())
     elif message.text == '/bingwallpaper':
         download_bing_wallpaper(message.chat.id)
+    elif message.text == '/img2ico':
+        bot.send_message(message.chat.id, "请回复一个jpg或png图片文件:")
+        bot.register_next_step_handler(message, convert_to_ico)
 
 
 # 生成二维码
@@ -105,6 +109,43 @@ def download_bing_wallpaper(chat_id):
     except Exception as e:
         bot.send_message(chat_id, '下载壁纸时发生错误。')
 
+# 图片转ico
+def convert_to_ico(message):
+    # 检查用户回复的消息是否包含图片
+    if message.content_type != 'photo':
+        bot.send_message(message.chat.id, "请回复一个jpg或png图片文件。")
+        return
+
+    # 获取用户回复的图片
+    # API_KEY = "6058236364:AAHlMLUhcETG6VdZhCg57PIzX7PcTjDe8NQ"
+    photo = message.photo[-1]
+    file_info = bot.get_file(photo.file_id)
+    file = requests.get('https://api.telegram.org/file/bot{}/{}'.format(API_KEY, file_info.file_path))
+
+    # 将图片保存到本地
+    image_path = 'image.jpg'  # 保存图片的文件名，可以根据需要进行修改
+    with open(image_path, 'wb') as f:
+        f.write(file.content)
+
+    # 转换图片为ico格式
+    try:
+        image = Image.open(image_path)
+        if image.format not in ['JPEG', 'PNG']:
+            bot.send_message(message.chat.id, "只支持jpg和png格式的图片。")
+            return
+
+        ico_path = 'icon.ico'  # 保存ico图标的文件名，可以根据需要进行修改
+        image.save(ico_path, format='ICO')
+
+        # 发送ico图标给用户
+        with open(ico_path, 'rb') as f:
+            bot.send_document(message.chat.id, f)
+
+        # 删除临时文件
+        os.remove(image_path)
+        os.remove(ico_path)
+    except Exception as e:
+        bot.send_message(message.chat.id, "转换图片时发生错误。")
 
 
 bot.polling()
