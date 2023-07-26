@@ -1,5 +1,6 @@
 import telebot
-import qrcode 
+from telebot import types
+import qrcode
 import base64
 import os
 import random
@@ -10,52 +11,87 @@ from PIL import Image
 
 API_KEY = os.environ.get('API_KEY', "")
 bot = telebot.TeleBot(API_KEY)
-# bot = telebot.TeleBot('6058236**********TjDe8NQ')
+# bot = telebot.TeleBot('6058236364:AAHlMLUhcETG6VdZhCg57PIzX7PcTjDe8NQ')
+
+keyboard = types.ReplyKeyboardMarkup(row_width=3,resize_keyboard=True)
+# 添加按钮到键盘
+button1 = types.KeyboardButton('文本转二维码')
+button2 = types.KeyboardButton('base64编码')
+button3 = types.KeyboardButton('base64解码')
+button4 = types.KeyboardButton('随机密码生成')
+button5 = types.KeyboardButton('uuid生成器')
+button6 = types.KeyboardButton('必应每日壁纸')
+button7 = types.KeyboardButton('图片转ico图标')
+button8 = types.KeyboardButton('关闭键盘')
+
+keyboard.add(button1, button2, button3, button4, button5, button6, button7, button8)
+
 
 # /start命令处理函数
-@bot.message_handler(commands=['start'])  
+@bot.message_handler(commands=['start'])
 def handle_start(message):
-    bot.send_message(message.chat.id, "欢迎使用!!!")
+    global keyboard_open
+    keyboard_open = True
+    welcome_message = "欢迎使用工具盒子机器人!🎈\n\n发送 /start 开始程序\n发送 /menu 开启键盘\n发送 /close 关闭键盘\n发送 /help 获取命令"
+    bot.send_message(message.chat.id, welcome_message, reply_markup=keyboard)
+
+@bot.message_handler(commands=['help'])
+def handle_start(message):
+    global keyboard_open
+    keyboard_open = True
+    welcome_message = "start-开始程序\nmenu-开启键盘\nclose-关闭键盘\nhelp-获取命令"
+    bot.send_message(message.chat.id, welcome_message, reply_markup=keyboard)
 
 # 文本消息处理函数
 @bot.message_handler(func=lambda message: True)
 def handle_text(message):
-    if message.text == '/qrcode':
+    global keyboard_open
+    if message.text == '/menu':
+        keyboard_open = True
+        bot.send_message(message.chat.id, "已开启键盘", reply_markup=keyboard)
+    elif message.text == '关闭键盘':
+        keyboard_open = False
+        bot.send_message(message.chat.id, "已关闭键盘", reply_markup=types.ReplyKeyboardRemove())
+    if message.text == '/close':
+        keyboard_open = False
+        bot.send_message(message.chat.id, "已关闭键盘", reply_markup=types.ReplyKeyboardRemove())
+    if message.text == '文本转二维码':
         bot.send_message(message.chat.id, "请回复要转换成二维码的文本内容:")
         bot.register_next_step_handler(message, generate_qrcode)
-    elif message.text == '/base64':
+    elif message.text == 'base64编码':
         bot.send_message(message.chat.id, "请回复要Base64编码的文本内容:")
         bot.register_next_step_handler(message, encode_base64)
-    elif message.text == '/base64decoding':
+    elif message.text == 'base64解码':
         bot.send_message(message.chat.id, "请回复要解码的Base64文本内容:")
         bot.register_next_step_handler(message, decode_base64)
-    elif message.text == '/randompassword':
+    elif message.text == '随机密码生成':
         bot.send_message(message.chat.id, generate_random_password())
-    elif message.text == '/uuid':
+    elif message.text == 'uuid生成器':
         bot.send_message(message.chat.id, generate_uuid())
-    elif message.text == '/bingwallpaper':
+    elif message.text == '必应每日壁纸':
         download_bing_wallpaper(message.chat.id)
-    elif message.text == '/img2ico':
+    elif message.text == '图片转ico图标':
         bot.send_message(message.chat.id, "请回复一个jpg或png图片文件:")
         bot.register_next_step_handler(message, convert_to_ico)
+
 
 
 # 生成二维码
 def generate_qrcode(message):
     text = message.text
     img = qrcode.make(text)
-    img.save('qrcode.png') 
+    img.save('qrcode.png')
     photo = open('qrcode.png', 'rb')
     bot.send_photo(message.chat.id, photo)
 
-# Base64编码处理函数  
+# Base64编码处理函数
 def encode_base64(message):
     text = message.text
     text_bytes = text.encode('utf-8')
     base64_bytes = base64.b64encode(text_bytes)
     base64_text = base64_bytes.decode('ascii')
-    
-    bot.send_message(message.chat.id, base64_text) 
+
+    bot.send_message(message.chat.id, base64_text)
 
 # Base64解码处理函数
 def decode_base64(message):
@@ -63,8 +99,8 @@ def decode_base64(message):
     base64_bytes = base64_text.encode('ascii')
     text_bytes = base64.b64decode(base64_bytes)
     text = text_bytes.decode('utf-8')
-    
-    bot.send_message(message.chat.id, text) 
+
+    bot.send_message(message.chat.id, text)
 
 # 生成随机密码
 def generate_random_password():
@@ -75,7 +111,7 @@ def generate_random_password():
 # 生成UUID
 def generate_uuid():
     return str(uuid.uuid4())
-    
+
 # 下载必应每日壁纸
 def download_bing_wallpaper(chat_id):
     # 构建必应每日壁纸的URL
@@ -109,6 +145,7 @@ def download_bing_wallpaper(chat_id):
     except Exception as e:
         bot.send_message(chat_id, '下载壁纸时发生错误。')
 
+
 # 图片转ico
 def convert_to_ico(message):
     # 检查用户回复的消息是否包含图片
@@ -117,7 +154,7 @@ def convert_to_ico(message):
         return
 
     # 获取用户回复的图片
-    # API_KEY = "6058236364:AAHlMLUhcETG6VdZhCg57PIzX7PcTjDe8NQ"
+    API_KEY = "6058236364:AAHlMLUhcETG6VdZhCg57PIzX7PcTjDe8NQ"
     photo = message.photo[-1]
     file_info = bot.get_file(photo.file_id)
     file = requests.get('https://api.telegram.org/file/bot{}/{}'.format(API_KEY, file_info.file_path))
@@ -146,6 +183,7 @@ def convert_to_ico(message):
         os.remove(ico_path)
     except Exception as e:
         bot.send_message(message.chat.id, "转换图片时发生错误。")
+
 
 
 bot.polling()
