@@ -22,9 +22,10 @@ button4 = types.KeyboardButton('随机密码生成')
 button5 = types.KeyboardButton('uuid生成器')
 button6 = types.KeyboardButton('必应每日壁纸')
 button7 = types.KeyboardButton('图片转ico图标')
-button8 = types.KeyboardButton('关闭键盘')
+button8 = types.KeyboardButton('舔狗日记')
+button9 = types.KeyboardButton('关闭键盘')
 
-keyboard.add(button1, button2, button3, button4, button5, button6, button7, button8)
+keyboard.add(button1, button2, button3, button4, button5, button6, button7, button8, button9)
 
 
 # /start命令处理函数
@@ -73,7 +74,13 @@ def handle_text(message):
     elif message.text == '图片转ico图标':
         bot.send_message(message.chat.id, "请回复一个jpg或png图片文件:")
         bot.register_next_step_handler(message, convert_to_ico)
-
+    elif message.text == '舔狗日记':
+        response = requests.get('https://cloud.qqshabi.cn/api/tiangou/api.php')
+        if response.status_code == 200:
+            diary = response.text
+            bot.send_message(message.chat.id, diary)
+        else:
+            bot.send_message(message.chat.id, '获取舔狗日记失败，请稍后再试。')
 
 
 # 生成二维码
