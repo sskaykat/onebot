@@ -23,9 +23,10 @@ button5 = types.KeyboardButton('uuid生成器')
 button6 = types.KeyboardButton('必应每日壁纸')
 button7 = types.KeyboardButton('图片转ico图标')
 button8 = types.KeyboardButton('舔狗日记')
-button9 = types.KeyboardButton('关闭键盘')
+button9 = types.KeyboardButton('网易云热评')
+button10 = types.KeyboardButton('关闭键盘')
 
-keyboard.add(button1, button2, button3, button4, button5, button6, button7, button8, button9)
+keyboard.add(button1, button2, button3, button4, button5, button6, button7, button8, button9, button10)
 
 
 # /start命令处理函数
@@ -81,6 +82,13 @@ def handle_text(message):
             bot.send_message(message.chat.id, diary)
         else:
             bot.send_message(message.chat.id, '获取舔狗日记失败，请稍后再试。')
+    elif message.text == '网易云热评':
+        response = requests.get('https://cloud.qqshabi.cn/api/comments/api.php?format=text')
+        if response.status_code == 200:
+            diary = response.text
+            bot.send_message(message.chat.id, diary)
+        else:
+            bot.send_message(message.chat.id, '获取网易云热评失败，请稍后再试。')
 
 
 # 生成二维码
