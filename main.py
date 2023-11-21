@@ -13,7 +13,7 @@ API_KEY = os.environ.get('API_KEY', "")
 bot = telebot.TeleBot(API_KEY)
 # bot = telebot.TeleBot('6058236364:AAHlMLUhcETG6VdZhCg57PIzX7PcTjDe8NQ')
 
-keyboard = types.ReplyKeyboardMarkup(row_width=3,resize_keyboard=True)
+keyboard = types.ReplyKeyboardMarkup(row_width=4,resize_keyboard=True)
 # 添加按钮到键盘
 button1 = types.KeyboardButton('文本转二维码')
 button2 = types.KeyboardButton('base64编码')
@@ -85,8 +85,8 @@ def handle_text(message):
     elif message.text == '网易云热评':
         response = requests.get('https://cloud.qqshabi.cn/api/comments/api.php?format=text')
         if response.status_code == 200:
-            diary = response.text
-            bot.send_message(message.chat.id, diary)
+            diaryp = response.text
+            bot.send_message(message.chat.id, diaryp)
         else:
             bot.send_message(message.chat.id, '获取网易云热评失败，请稍后再试。')
 
